@@ -1,0 +1,181 @@
+﻿<!-- Views/MissileCard.xaml -->
+<UserControl x:Class="Project_Exercise.Views.MissileCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:models="clr-namespace:Project_Exercise.Models" 
+             d:DataContext="{d:DesignInstance Type=models:Missile}"
+             mc:Ignorable="d"
+             d:DesignHeight="240" d:DesignWidth="440">
+
+    <!-- 공용 리소스 -->
+    <UserControl.Resources>
+        <!-- DataContext.Photo 가 null일 때만 보이기 -->
+        <Style x:Key="ShowWhenPhotoNull" TargetType="UIElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Photo}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- DataContext.Photo 가 not-null 일 때만 보이기 -->
+        <Style x:Key="ShowWhenPhotoNotNull" TargetType="UIElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Photo}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 버튼 기본 스타일 -->
+        <Style TargetType="Button" x:Key="CardButtonStyle">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Margin" Value="8,0,8,0"/>
+            <Setter Property="Background" Value="#E5E5E5"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="BorderBrush" Value="#AAA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- 카드 루트 -->
+    <Border CornerRadius="8" BorderBrush="#3AA7FF" BorderThickness="2"
+            Padding="12" Background="#D9D9D9">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="56"/>
+            </Grid.RowDefinitions>
+
+            <!-- 상단: 이미지 + 타입명 -->
+            <Grid Grid.Row="0" Margin="0 0 0 8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- 이미지 박스 -->
+                <Border Grid.Column="0" Width="140" Height="100" Background="#EFEFEF" BorderBrush="#333" BorderThickness="1" CornerRadius="4">
+                    <!-- 실제 이미지 -->
+                    <!-- 플레이스홀더 -->
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="🖼️" FontSize="24" HorizontalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource ShowWhenPhotoNull}"/>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- 타입명 -->
+                <TextBlock Grid.Column="1" Text="{Binding TypeName}"
+                           VerticalAlignment="Center" Margin="16,0,0,0"
+                           FontSize="28" FontWeight="SemiBold" />
+            </Grid>
+
+            <!-- 본문 (발사 전/후 전환) -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- 발사 전: ID, 상태만 -->
+                <StackPanel Grid.ColumnSpan="2">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CanLaunch}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBlock Text="{Binding Id, StringFormat=ID: {0}}" FontSize="16" />
+                    <TextBlock>
+                        <Run Text="상태: "/>
+                        <Run Text="{Binding FlightState}"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- 발사 후(좌): 상세 텍스트 -->
+                <StackPanel Grid.Column="0">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CanLaunch}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBlock Text="{Binding Id, StringFormat=ID: {0}}" FontSize="16"/>
+                    <TextBlock Text="{Binding TargetId, StringFormat=표적: {0}}"/>
+                    <TextBlock><Run Text="상태: "/><Run Text="{Binding FlightState}"/></TextBlock>
+                    <TextBlock><Run Text="통신: "/><Run Text="{Binding CommState}"/></TextBlock>
+                    <TextBlock><Run Text="표적: "/><Run Text="{Binding TargetTrackState}"/></TextBlock>
+                </StackPanel>
+
+                <!-- 발사 후(우): 위치/속력 -->
+                <StackPanel Grid.Column="1">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CanLaunch}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBlock Text="{Binding X, StringFormat=x: {0:F4}}"/>
+                    <TextBlock Text="{Binding Y, StringFormat=y: {0:F4}}"/>
+                    <TextBlock Text="{Binding Zkm, StringFormat=z: {0}km}"/>
+                    <TextBlock Text="{Binding SpeedMs, StringFormat=속력: {0}m/s}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 하단 버튼 -->
+            <Grid Grid.Row="2" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 발사 -->
+                <Button Grid.Column="0"
+                        Content="발 사"
+                        Command="{Binding LaunchCommand}"
+                        IsEnabled="{Binding CanLaunch}"
+                        Style="{StaticResource CardButtonStyle}"/>
+
+                <!-- 자폭 -->
+                <Button Grid.Column="1"
+                        Content="자 폭"
+                        Command="{Binding SelfDestructCommand}"
+                        IsEnabled="{Binding CanSelfDestruct}"
+                        Style="{StaticResource CardButtonStyle}">
+                    <Button.Background>#BDBDBD</Button.Background>
+                    <Button.BorderBrush>#888</Button.BorderBrush>
+                    <Button.Foreground>#111</Button.Foreground>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>
