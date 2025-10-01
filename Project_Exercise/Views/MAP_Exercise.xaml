@@ -1,13 +1,52 @@
 ﻿<UserControl x:Class="Project_Exercise.Views.MAP_Exercise"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Project_Exercise.Views"
-             xmlns:gmap="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:gmap="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation">
+
     <Grid>
-        <gmap:GMapControl x:Name="PART_Map" Loaded="Map_Loaded"/>
+        <!-- 지도 컨트롤 -->
+        <!-- 초기 줌 = 7 -->
+        <!-- 드래그 가능 = True -->
+        <!-- 마우스 휠 줌 기준 = 마우스 위치 -->
+        <gmap:GMapControl x:Name="PART_Map"
+                          Zoom="7"
+                          CanDragMap="True"
+                          MouseWheelZoomType="MousePositionAndCenter"/>
+
+        <!-- 우측 상단 제어 패널 -->
+        <Border HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="10"
+                Background="#AA1E1E1E"
+                Padding="10"
+                CornerRadius="8">
+
+            <StackPanel Orientation="Vertical" >
+                <TextBlock Text="Marker Placement"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           Margin="0,0,0,6"/>
+
+                <CheckBox x:Name="ChkIsEnemy"
+                          Content="적군으로 배치"
+                          IsChecked="True"
+                          Foreground="White"
+                          Margin="0,0,0,6"/>
+
+                <ToggleButton x:Name="TglPlacementMode"
+                              Content="배치 모드 (두 번 클릭)"
+                              Checked="TglPlacementMode_Checked"
+                              Unchecked="TglPlacementMode_Unchecked"
+                              Margin="0,0,0,6"/>
+
+                <TextBlock x:Name="TxtStatus"
+                           Foreground="White"
+                           Text="상태: 대기"
+                           Margin="0,0,0,6"/>
+
+                <Button Content="모두 지우기"
+                        Click="BtnClearAll_Click"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>
